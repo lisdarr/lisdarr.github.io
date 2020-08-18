@@ -27,12 +27,14 @@
 <meta property="og:site_name" content="lisdarr">
 <meta property="og:description" content="Make your blog better✨ 从无到有，我对博客做了什么">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/Make-your-blog-better/Users/54019/AppData/Roaming/Typora/typora-user-images/image-20200818004034343.png">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/Make-your-blog-better/uisdc-sq-20200528-3.jpg">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/Make-your-blog-better/捕获.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/Make-your-blog-better/image-20200818004034343.png">
 <meta property="article:published_time" content="2020-08-17T16:46:58.000Z">
-<meta property="article:modified_time" content="2020-08-17T16:47:46.621Z">
+<meta property="article:modified_time" content="2020-08-18T03:24:47.777Z">
 <meta property="article:author" content="lisdarr">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://lisdarr.github.io/2020/08/18/Make-your-blog-better/Users/54019/AppData/Roaming/Typora/typora-user-images/image-20200818004034343.png">
+<meta name="twitter:image" content="http://lisdarr.github.io/2020/08/18/Make-your-blog-better/uisdc-sq-20200528-3.jpg">
 
 <link rel="canonical" href="http://lisdarr.github.io/2020/08/18/Make-your-blog-better/">
 
@@ -191,7 +193,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-08-18 00:46:58 / 修改时间：00:47:46" itemprop="dateCreated datePublished" datetime="2020-08-18T00:46:58+08:00">2020-08-18</time>
+              <time title="创建时间：2020-08-18 00:46:58 / 修改时间：11:24:47" itemprop="dateCreated datePublished" datetime="2020-08-18T00:46:58+08:00">2020-08-18</time>
             </span>
 
           
@@ -209,10 +211,28 @@
 <p>从无到有，我对博客做了什么</p>
 </blockquote>
 <a id="more"></a>
-<h3 id="设计预览摘要"><a href="#设计预览摘要" class="headerlink" title="设计预览摘要"></a>设计预览摘要</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">摘要部分</span><br><span class="line"><span class="comment">&lt;!-- more --&gt;</span></span><br><span class="line">正文除摘要部分</span><br></pre></td></tr></table></figure>
-<h3 id="添加菜单选项"><a href="#添加菜单选项" class="headerlink" title="添加菜单选项"></a>添加菜单选项</h3><p>默认情况下，菜单导航栏有首页、归档两个选项，我添加了关于、标签和分类。</p>
+<h2 id="让图片正常显示"><a href="#让图片正常显示" class="headerlink" title="让图片正常显示"></a>让图片正常显示</h2><ol>
+<li><p>找到<code>Hexo</code>下的<code>_config.yml</code>里的<code>post_asset_folder</code>，把这个选项从<code>false</code>改成<code>true</code>。</p>
+</li>
+<li><p>在<code>Hexo</code>目录下打开<code>Git Bash</code>，执行一个下载上传图片插件的命令<code>npm install hexo-asset-image --save</code>。</p>
+</li>
+<li><p>先把图片上传到本地对应文件夹中，再上传该图片至<code>.md</code>文件</p>
+</li>
+</ol>
+<h2 id="更改网站小图标"><a href="#更改网站小图标" class="headerlink" title="更改网站小图标"></a>更改网站小图标</h2><ol>
+<li><p>图标制作：推荐网站：<a target="_blank" rel="noopener" href="https://favicon.io/">https://favicon.io/</a></p>
+<p>该网站可以通过这三种方式进行制作，非常简单易用，而且会直接帮助生成一个文件夹，包含需要的全部尺寸的图标，墙裂安利！</p>
+<p><img src="/2020/08/18/Make-your-blog-better/uisdc-sq-20200528-3.jpg" alt="uisdc-sq-20200528-3" style="zoom:67%;"></p>
+</li>
+<li><p>替换图标：首先打开<code>\themes\next\_config.yml</code>，找到<code>favicon:</code>，观察到图标图片存储的路径为<code>images</code>下，去该路径下进行图片的替换即可（如果图片名不一样，记得保持一致）</p>
+<p><img src="/2020/08/18/Make-your-blog-better/捕获.PNG" alt="捕获" style="zoom:50%;"></p>
+<p>注：我的<code>images</code>路径为<code>\next\source\images</code></p>
+</li>
+</ol>
+<h2 id="设计预览摘要"><a href="#设计预览摘要" class="headerlink" title="设计预览摘要"></a>设计预览摘要</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">摘要部分</span><br><span class="line"><span class="comment">&lt;!-- more --&gt;</span></span><br><span class="line">正文除摘要部分</span><br></pre></td></tr></table></figure>
+<h2 id="添加菜单选项"><a href="#添加菜单选项" class="headerlink" title="添加菜单选项"></a>添加菜单选项</h2><p>默认情况下，菜单导航栏有首页、归档两个选项，我添加了关于、标签和分类。</p>
 <p>在<strong>主题配置文件</strong> 中，找到<code>menu</code>属性，并去掉<code>categories、 tags、about</code>的的注释，如下图所示：</p>
-<p><img src="/2020/08/18/Make-your-blog-better/Users\54019\AppData\Roaming\Typora\typora-user-images\image-20200818004034343.png" alt="image-20200818004034343" style="zoom:70%;"></p>
+<p><img src="/2020/08/18/Make-your-blog-better/image-20200818004034343.png" alt="image-20200818004034343" style="zoom:70%;"></p>
 <p>然后在根目录(Bash)执行指令如下：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 添加分类页面</span><br><span class="line">hexo new page &quot;categories&quot;</span><br><span class="line">// 添加标签页面</span><br><span class="line">hexo new page &quot;tags&quot;</span><br><span class="line">// 添加关于页面</span><br><span class="line">hexo new page &quot;about&quot;</span><br></pre></td></tr></table></figure>
 <p>执行完上述指令后，在根目录<code>/source/</code>文件夹下已经创建好了三个相应的文件夹，命名分别为：<code>categories、tags、about</code>，这些文件夹中分别创建了一个以<code>index</code>命名的Markdown文件，对这三个Markdown文件内容进行修改，使之分别为：</p>
@@ -295,7 +315,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Make-your-blog-better%E2%9C%A8"><span class="nav-number">1.</span> <span class="nav-text">Make your blog better✨</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E9%A2%84%E8%A7%88%E6%91%98%E8%A6%81"><span class="nav-number">1.0.1.</span> <span class="nav-text">设计预览摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E8%8F%9C%E5%8D%95%E9%80%89%E9%A1%B9"><span class="nav-number">1.0.2.</span> <span class="nav-text">添加菜单选项</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Make-your-blog-better%E2%9C%A8"><span class="nav-number">1.</span> <span class="nav-text">Make your blog better✨</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A9%E5%9B%BE%E7%89%87%E6%AD%A3%E5%B8%B8%E6%98%BE%E7%A4%BA"><span class="nav-number">1.1.</span> <span class="nav-text">让图片正常显示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%94%B9%E7%BD%91%E7%AB%99%E5%B0%8F%E5%9B%BE%E6%A0%87"><span class="nav-number">1.2.</span> <span class="nav-text">更改网站小图标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E9%A2%84%E8%A7%88%E6%91%98%E8%A6%81"><span class="nav-number">1.3.</span> <span class="nav-text">设计预览摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E8%8F%9C%E5%8D%95%E9%80%89%E9%A1%B9"><span class="nav-number">1.4.</span> <span class="nav-text">添加菜单选项</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
