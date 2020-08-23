@@ -31,7 +31,7 @@
 <meta property="og:image" content="http://lisdarr.github.io/2020/08/18/Make-your-blog-better/捕获.PNG">
 <meta property="og:image" content="http://lisdarr.github.io/2020/08/18/Make-your-blog-better/image-20200818004034343.png">
 <meta property="article:published_time" content="2020-08-17T16:46:58.000Z">
-<meta property="article:modified_time" content="2020-08-18T11:39:10.544Z">
+<meta property="article:modified_time" content="2020-08-23T13:03:55.523Z">
 <meta property="article:author" content="lisdarr">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://lisdarr.github.io/2020/08/18/Make-your-blog-better/uisdc-sq-20200528-3.jpg">
@@ -191,12 +191,25 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-08-18 00:46:58 / 修改时间：19:39:10" itemprop="dateCreated datePublished" datetime="2020-08-18T00:46:58+08:00">2020-08-18</time>
+              <time title="创建时间：2020-08-18 00:46:58" itemprop="dateCreated datePublished" datetime="2020-08-18T00:46:58+08:00">2020-08-18</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 21:03:55" itemprop="dateModified" datetime="2020-08-23T21:03:55+08:00">2020-08-23</time>
+              </span>
 
           
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
 
         </div>
       </header>
@@ -241,6 +254,15 @@
 <h2 id="如何添加“tags”和“categories”中的属性"><a href="#如何添加“tags”和“categories”中的属性" class="headerlink" title="如何添加“tags”和“categories”中的属性"></a>如何添加“tags”和“categories”中的属性</h2><p>举个🌰：</p>
 <figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">tags:</span></span><br><span class="line">- 目标检测</span><br><span class="line">- 机器学习</span><br><span class="line">categories:</span><br><span class="line">- 学术论文</span><br></pre></td></tr></table></figure>
 <p>按照这个格式就可以自动添加啦~</p>
+<h2 id="添加访客人数和总访问量"><a href="#添加访客人数和总访问量" class="headerlink" title="添加访客人数和总访问量"></a>添加访客人数和总访问量</h2><p>hexo博客添加页脚访客人数和总访问量使用的是<a target="_blank" rel="noopener" href="http://busuanzi.ibruce.info/">不蒜子</a>来进行统计的。</p>
+<ol>
+<li><p>保证开启不蒜子访问量统计功能，路径为：<code>\themes\next\_config.yml</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">busuanzi_count:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加站点访问量：在<code>themes/next/layout/_partial/footer.swig</code>末尾添加代码</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;% <span class="keyword">if</span> (theme.busuanzi &amp;&amp; theme.busuanzi.enable)&#123; %&gt;</span><br><span class="line">        &lt;!-- 不蒜子统计 --&gt;</span><br><span class="line">        &lt;span id=<span class="string">&quot;busuanzi_container_site_pv&quot;</span>&gt;</span><br><span class="line">                本站总访问量&lt;span id=<span class="string">&quot;busuanzi_value_site_pv&quot;</span>&gt;&lt;/span&gt;次</span><br><span class="line">        &lt;/span&gt;</span><br><span class="line">        &lt;span <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;post-meta-divider&quot;</span>&gt;|&lt;/span&gt;</span><br><span class="line">        &lt;span id=<span class="string">&quot;busuanzi_container_site_uv&quot;</span> style=<span class="string">&#x27;display:none&#x27;</span>&gt;</span><br><span class="line">                本站访客数&lt;span id=<span class="string">&quot;busuanzi_value_site_uv&quot;</span>&gt;&lt;/span&gt;人</span><br><span class="line">        &lt;/span&gt;</span><br><span class="line">        &lt;script <span class="keyword">async</span> src=<span class="string">&quot;//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js&quot;</span>&gt;&lt;/script&gt;</span><br><span class="line">  &lt;% &#125; %&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
 
     </div>
 
@@ -321,7 +343,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Make-your-blog-better%E2%9C%A8"><span class="nav-number">1.</span> <span class="nav-text">Make your blog better✨</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A9%E5%9B%BE%E7%89%87%E6%AD%A3%E5%B8%B8%E6%98%BE%E7%A4%BA"><span class="nav-number">1.1.</span> <span class="nav-text">让图片正常显示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%94%B9%E7%BD%91%E7%AB%99%E5%B0%8F%E5%9B%BE%E6%A0%87"><span class="nav-number">1.2.</span> <span class="nav-text">更改网站小图标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E9%A2%84%E8%A7%88%E6%91%98%E8%A6%81"><span class="nav-number">1.3.</span> <span class="nav-text">设计预览摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E8%8F%9C%E5%8D%95%E9%80%89%E9%A1%B9"><span class="nav-number">1.4.</span> <span class="nav-text">添加菜单选项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E2%80%9Ctags%E2%80%9D%E5%92%8C%E2%80%9Ccategories%E2%80%9D%E4%B8%AD%E7%9A%84%E5%B1%9E%E6%80%A7"><span class="nav-number">1.5.</span> <span class="nav-text">如何添加“tags”和“categories”中的属性</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Make-your-blog-better%E2%9C%A8"><span class="nav-number">1.</span> <span class="nav-text">Make your blog better✨</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A9%E5%9B%BE%E7%89%87%E6%AD%A3%E5%B8%B8%E6%98%BE%E7%A4%BA"><span class="nav-number">1.1.</span> <span class="nav-text">让图片正常显示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%94%B9%E7%BD%91%E7%AB%99%E5%B0%8F%E5%9B%BE%E6%A0%87"><span class="nav-number">1.2.</span> <span class="nav-text">更改网站小图标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E9%A2%84%E8%A7%88%E6%91%98%E8%A6%81"><span class="nav-number">1.3.</span> <span class="nav-text">设计预览摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E8%8F%9C%E5%8D%95%E9%80%89%E9%A1%B9"><span class="nav-number">1.4.</span> <span class="nav-text">添加菜单选项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E2%80%9Ctags%E2%80%9D%E5%92%8C%E2%80%9Ccategories%E2%80%9D%E4%B8%AD%E7%9A%84%E5%B1%9E%E6%80%A7"><span class="nav-number">1.5.</span> <span class="nav-text">如何添加“tags”和“categories”中的属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E8%AE%BF%E5%AE%A2%E4%BA%BA%E6%95%B0%E5%92%8C%E6%80%BB%E8%AE%BF%E9%97%AE%E9%87%8F"><span class="nav-number">1.6.</span> <span class="nav-text">添加访客人数和总访问量</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -370,7 +392,9 @@
       <div class="footer-inner">
         
 
-        
+        <script async
+  src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
 
 <div class="copyright">
   
@@ -384,7 +408,28 @@
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
 
+
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
 
 
 
