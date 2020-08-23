@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lisdarr.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="数字图像处理的期末作业是学习一篇顶会论文，我选择了cvpr2020少样本目标检测《Few-Shot Object Detection with Attention-RPN and Multi-Relation Detector》论文进行解读。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="阅读第一篇顶会论文">
+<meta property="og:url" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/index.html">
+<meta property="og:site_name" content="lisdarr">
+<meta property="og:description" content="数字图像处理的期末作业是学习一篇顶会论文，我选择了cvpr2020少样本目标检测《Few-Shot Object Detection with Attention-RPN and Multi-Relation Detector》论文进行解读。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic1.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic2.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic3.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic4.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic5.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic6.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic7.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic8.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic9.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic10.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic11.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic2.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic3.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic5.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic7.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic3.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic5.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/table8.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic6.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic7.PNG">
+<meta property="og:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic9.PNG">
+<meta property="article:published_time" content="2020-08-18T05:04:50.000Z">
+<meta property="article:modified_time" content="2020-08-19T08:28:12.453Z">
+<meta property="article:author" content="lisdarr">
+<meta property="article:tag" content="目标检测">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic1.PNG">
+
+<link rel="canonical" href="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>阅读第一篇顶会论文 | lisdarr</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">lisdarr</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lisdarr.github.io/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="lisdarr">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="lisdarr">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          阅读第一篇顶会论文
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-18 13:04:50" itemprop="dateCreated datePublished" datetime="2020-08-18T13:04:50+08:00">2020-08-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-19 16:28:12" itemprop="dateModified" datetime="2020-08-19T16:28:12+08:00">2020-08-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E6%9C%AF%E8%AE%BA%E6%96%87/" itemprop="url" rel="index"><span itemprop="name">学术论文</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>数字图像处理的期末作业是学习一篇顶会论文，我选择了cvpr2020少样本目标检测<strong>《Few-Shot Object Detection with Attention-RPN and Multi-Relation Detector》</strong>论文进行解读。</p>
+<a id="more"></a>
+<p>目前，我在机器学习领域的知识储备约等于零🙃，所以参考了很多别人的分析，这篇博文可以看作是整理总结，文章最后列出了参考博客的网站。</p>
+<blockquote>
+<p>论文链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1908.01998">https://arxiv.org/abs/1908.01998</a></p>
+<p>数据集参考：<a target="_blank" rel="noopener" href="https://github.com/fanq15/Few-Shot-Object-Detection-Dataset">https://github.com/fanq15/Few-Shot-Object-Detection-Dataset</a></p>
+<p>开源代码：<a target="_blank" rel="noopener" href="https://github.com/fanq15/FSOD-code">https://github.com/fanq15/FSOD-code</a></p>
+</blockquote>
+<h1 id="论文阅读"><a href="#论文阅读" class="headerlink" title="论文阅读"></a>论文阅读</h1><h2 id="Author"><a href="#Author" class="headerlink" title="Author"></a>Author</h2><ul>
+<li><p>作者</p>
+<p>Qi Fan，Wei Zhuo，Chi-Keung Tang，Yu-Wing Tai</p>
+</li>
+<li><p>机构</p>
+<p>HKUST</p>
+<p>Tencent</p>
+</li>
+<li><p>时间</p>
+<p>2020年</p>
+</li>
+</ul>
+<h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><ul>
+<li>传统的目标检测算法需要大量高质量的标注数据来训练模型，而数据标注非常耗费人力物力，因此本文中提到了一种“小样本”的目标检测网络，旨在通过少量的标记数据就能让模型有效检测那些从未见过的目标；</li>
+<li>该算法的核心有三点：Attention-RPN, Multi-Relation Detector, Contrastive Training strategy，能够利用小样本的 support set 和 query set 的相似性来检测新的目标同时抑制 background 中的错误检测；</li>
+<li>这个团队还自己建立了一个包含 1000 种目标的数据集，这是第一个专为“小样本”目标检测设计的数据集；</li>
+</ul>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><ul>
+<li>提出了一个 “few-shot” 的目标检测框架，该算法的核心有三点：Attention-RPN, Multi-Relation Detector, Contrastive Training strategy；</li>
+<li>建立了一个专为 “few-shot” 目标检测而生的数据集</li>
+</ul>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><ul>
+<li>现存的目标检测算法依赖大量的数据进行检测，这促使学界转向小样本学习的研究，但大多数研究集中在图像分类上，对于小样本目标检测问题的研究还是颇少；</li>
+<li>“小样本”检测算法要让模型检测到那些在训练中并未见过的目标（以下简称unseen object），而 bounding box 很容易错过那些 unseen object，或者在背景区域产生大量错误的检测，作者认为这是由于 RPN 网络没有给这些好的 bounding box 一个应得的 score，最终导致新的目标很难被检测到；</li>
+<li>本文主要有两个贡献，一是提出了一个通用的小样本目标检测模型，不需要重新训练或者 fine-tuning 就能识别新种类的目标，二是建立了一个新的数据集；</li>
+</ul>
+<h2 id="FSOD-A-Highly-Diverse-Few-Shot-Object-Detection-Dataset"><a href="#FSOD-A-Highly-Diverse-Few-Shot-Object-Detection-Dataset" class="headerlink" title="FSOD:A Highly-Diverse Few-Shot Object Detection Dataset"></a>FSOD:A Highly-Diverse Few-Shot Object Detection Dataset</h2><ul>
+<li>主要是混合 <strong>ImageNet</strong> 和 <strong>Open Image</strong> 两个数据集，进行了标签的统一工作，并划分了训练集和测试集，数据集的种类分布如图所示：</li>
+</ul>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic1.PNG" alt="pic1" style="zoom:70%;"></p>
+<ul>
+<li>构造过程<ul>
+<li>统一标签，比如在两个数据集中，分别有ice bear和polar bear，但这两个类别完全就是同一种类，因此在这里将类似的同语意标签进行合并。</li>
+<li>移除面积小于图片尺寸0.05%的框。</li>
+<li>划分训练集测试集，并且保证不会出现标签泄露的情况。具体做法如下：首先选取MS COCO数据集中的标签作为训练标签，因为很多情况下需要预训练网络，而这些预训练网络往往是在MS COCO中训练的；之后选取与COCO数据集差距最大的200个种类作为测试集；最后将剩下的所有种类加入到训练集中。</li>
+</ul>
+</li>
+</ul>
+<h2 id="Our-Methodology"><a href="#Our-Methodology" class="headerlink" title="Our Methodology"></a>Our Methodology</h2><h3 id="Problem-Definition"><a href="#Problem-Definition" class="headerlink" title="Problem Definition"></a>Problem Definition</h3><ul>
+<li><p>作者首先对本文的任务做出了定义，提到了两个概念—— support image 和 query image，support image 包含了对需要检测的目标的特写（下图中的做右上角，分别是对头盔和自行车的特写），而 query image 是我们要检测的目标，它可能包含了 support image 当中的目标，而我们的任务就是要在 query image 中把这些目标都找出来。如果 support set 包含了 K 个种类和 N 个对应的目标实例，这个问题被称为 <strong>K-way N-shot detection</strong>；</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic.PNG" alt="pic" style="zoom:80%;"></p>
+</li>
+</ul>
+<h3 id="Deep-Attentioned-FewShot-Detection"><a href="#Deep-Attentioned-FewShot-Detection" class="headerlink" title="Deep Attentioned FewShot Detection"></a>Deep Attentioned FewShot Detection</h3><ul>
+<li><p>本文的总体框架以<strong>Faster R-CNN</strong>为基础，模型主要创新点在于提出一个新的RPN结构<strong>Attention-RPN</strong>和<strong>detector</strong>头网络<strong>Multi-Relation Detector</strong>，同时还提出了一种新的训练策略<strong>Two-way Contrastive Training Strategy</strong>。</p>
+<p>本文算法的框架：</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic2.PNG" alt="pic2"></p>
+</li>
+<li><p>文中算法建立了一个新奇的注意力网络，能在 RPN 模块和 Detector 上学习 support set 和 query set 之间的联系；</p>
+</li>
+<li>图中的 weight shared network 有多个分支，可以分为两类，一类用于 query set，另一类用于 support set（support set 的分支可以有多个，用来输入不同的 support 图像，图中只画了一个），query set 的分支就是一个 Faster R-CNN 的结构；</li>
+</ul>
+<h4 id="Attention-Based-Region-Proposal-Network"><a href="#Attention-Based-Region-Proposal-Network" class="headerlink" title="Attention-Based Region Proposal Network"></a>Attention-Based Region Proposal Network</h4><ul>
+<li><p>作者认为 RPN 不仅应该区分 objects 和 non-objects，而且还应该过滤掉不属于 support set的目标，但在没有 support image 的信息支持下，RPN 会给出很多得分很高但并不属于 support set 的 proposal，这给后续的 detector 带来了很大负担，因此，作者提出了 Attention RPN 来解决这个问题；</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic3.PNG" alt="pic3" style="zoom:80%;"></p>
+</li>
+<li><p>将通过 weight shared network 提取的 support image 和 query image 的 feature 按照下式定义的 similarity 进行计算得到最终的 <strong>Attention feature map</strong>：</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic4.PNG" alt="pic4" style="zoom:80%;"></p>
+</li>
+</ul>
+<h4 id="Multi-Relation-Detector"><a href="#Multi-Relation-Detector" class="headerlink" title="Multi-Relation Detector"></a>Multi-Relation Detector</h4><ul>
+<li><p>为了使 detector 更好地分辨不同的种类，作者提出了下图所示的 multi-relation detector：</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic5.PNG" alt="pic5" style="zoom:70%;"></p>
+</li>
+<li><p>分别可以从全局、局部、patch三个角度来进行 support image 和 query image 间的匹配（说到底这一部分还是用来测量相似性的），作者也指出这三种模块可以互相结合以获得更好的性能，实验对比见下表：</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic6.PNG" alt="pic6"></p>
+</li>
+</ul>
+<h2 id="Two-way-Contrastive-Training-Strategy"><a href="#Two-way-Contrastive-Training-Strategy" class="headerlink" title="Two-way Contrastive Training Strategy"></a>Two-way Contrastive Training Strategy</h2><ul>
+<li><p>一种简单的训练策略是通过构造一个训练对（qc，sc）来匹配相同的类别对象，其中查询图像 qc 和支持图像 sc 都在同一个 c-th 类别对象中。作者认为一个好的模型不仅要匹配相同的类别对象，还要区分不同的类别，因此提出了一种新颖的双向对比训练策略。</p>
+</li>
+<li><p>具体做法是：随机地选择一张 query image——qc，一张 support image——sc，它两对应第 c 类目标，再选择一张包含第 n 类（n≠c）的 support image 来组成一个三元训练组，其中只有第 c 类的目标被标记为前景区域，其他的都被当做背景区域；</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic7.PNG" alt="pic7" style="zoom:67%;"></p>
+</li>
+<li><p>训练中会产生大量的背景 proposal，特别是在 negative support 的图片上，因此作者为三种匹配对设定了一个比率，即：<br>ratio as 1:2:1 for the<br>foreground proposal and positive support pairs (pf ; sp),<br>background proposal and positive support pairs (pb; sp), and<br>proposal (foreground or background) and negative support pairs (p; sn)</p>
+</li>
+<li><p>在训练时，使用 multi-task 的 loss function：</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic8.PNG" alt="pic8"></p>
+</li>
+</ul>
+<ul>
+<li><p>作者还对比了各种训练策略的效果：</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic9.PNG" alt="pic9"></p>
+<p>这的 k-way 等于你选取 k 个 negative support category + 1，n-shot 就是同一种类有 n 个模板；</p>
+</li>
+</ul>
+<h2 id="Experiments"><a href="#Experiments" class="headerlink" title="Experiments"></a>Experiments</h2><ul>
+<li><p>效果还是很不错的：</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic10.PNG" alt="pic10"></p>
+</li>
+</ul>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic11.PNG" alt="pic11" style="zoom: 67%;"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>无论是目标检测还是当今 CV 领域的其他任务，当前的算法总是要依赖 large-scale 的数据集，因此不管算法多花哨，模型都是 totally data-based 的，小样本的模型是以后的发展方向；</li>
+<li>文中的团队特意为本次的研究建立了一个数据集，相信这花费了大量的人力物力，为后续的研究提供了方便，这必须要点一个大大的赞；</li>
+<li>Muti-Relation detector 最终 match 的指标是二元交叉熵，bounding box 的 loss 参考了Fast RCNN；</li>
+<li>每一个 support branch 都有一个自己的 attention RPN，算法结构比较复杂；</li>
+<li>Muti-Relation detector 在进行匹配的时候计算量很大，文中也没有出现具体的单步推理时间；</li>
+<li>训练起来也比较麻烦，一是选定一个 sc 后其他的 negative support 怎么选取，二是怎么去遍历这些种类才算合理，这都是很值得讨论的问题。</li>
+</ul>
+<h1 id="阅读笔记"><a href="#阅读笔记" class="headerlink" title="阅读笔记"></a>阅读笔记</h1><h2 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h2><p>本文提出一种用于小样本目标检测的算法。整个结构采用两阶段的形式，第一阶段利用 RPN 网络进行定位，第二阶段利用检测器进行分类。针对这两个阶段的结构，本文做了两点改进以满足小样本学习的需求。首先提出一种基于注意力的RPN模块（Attention-Based Region Proposal Network，Attention-RPN），其次是提出一种采用多重关系的检测器（Multi-Relation Detector，MRD），最后作者还对训练方式进行了改进，提出 Two-way Contrastive Training Strategy 的训练策略。整个网络的结构如下图所示</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic2.PNG" alt="pic2"></p>
+<p>支持集图片是带有目标物体的特写图片，查询集图片是带有多类物体的照片。首先利用两个权重共享的网络分支，分别提取支持集图像和查询集图像的特征（对于支持集图像由于包含多种类别，因此有多个平行的特征提取分支，分别对应每个类别的图像）。然后对两组特征图分别进行感兴趣区域池化，用于寻找可能存在目标物体的区域。作者提出如果不借助任何的支持集图像的信息，RPN模块会漫无目的的在查询集图片中寻找存在物体概率大的区域，而不考虑这个物体是否是属于支持集类别的。因此作者将支持集的信息引入RPN过程中，过滤掉背景部分和不匹配的类别，实现过程如下图所示</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic3.PNG" alt="pic3"></p>
+<p>支持集特征图 XX 经过平均池化得到一个一维的特征向量，查询集特征图 YY 沿通道维度进行离散化，然后利用 XX 对应的特征向量作为卷积核，对 YY 对应的特征图做卷积操作，寻找到各个通道上每个像素点之间的关系，得到了带有注意力的特征图 GG 。最后对 GG 进行 3 * 3 的卷积，并判断是否包含物体和编辑框的回归（与普通的 RPN 过程相同），就得到查询集图像相应的 RPN 结果。对于支持集图像，直接用真实边界框做感性与区域池化就得到对应的结果。在得到查询集图片和支持集图片对应的 RPN 结果后，要通过相似性度量的方式来判断各个区域内的物体是属于哪个类别的，本文采用三种方式并行计算查询集图像和支持集图像之间的相似程度，处理过程如下</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic5.PNG" alt="pic5" style="zoom:67%;"></p>
+<p>三个分支分别是：全局关系分支（global-relation），局部关系分支（local-correlation）和图块关系分支（patch-relation）。顾名思义全局关系分支就是利用平均池化的方式将支持集和查询集图像对应的感兴趣区域特征图转化为一个特征向量，然后再计算相似性关系；而局部关系分支则是逐像素计算两组特征图之间的关系；而图块关系分支则是一个像素对应多个像素进行相似性计算，三个分支可以互为补充，可以获得更好的分类性能，具体计算过程正文中并没有介绍。</p>
+<p>最后，作者还提出一种Two-way Contrastive Training Strategy的训练策略，作者认为一个好的分类器不仅能够识别图中物体所属的类别，而且能够区分图中物体不相关的类别。因此在训练过程中，支持集中不仅包含查询集中存在的正向样本，而且还混杂有查询集中不存在的负向样本，让网络判断查询集中的物体是否与二者相匹配，以增强网络的区分能力。</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic7.PNG" alt="pic7" style="zoom:67%;"></p>
+<p>此外，作者还为小样本目标检测任务制作了一个专用的数据集（FSOD: A Highly-Diverse Few-Shot Object Detection Dataset）用于支持小样本目标检测任务的研究，共包含1000个类别，总计66000张图片。</p>
+<h2 id="三大算法深入讲解"><a href="#三大算法深入讲解" class="headerlink" title="三大算法深入讲解"></a>三大算法深入讲解</h2><h3 id="Attention-Based-Region-Proposal-Network-1"><a href="#Attention-Based-Region-Proposal-Network-1" class="headerlink" title="Attention-Based Region Proposal Network"></a><strong>Attention-Based Region Proposal Network</strong></h3><p>首先我们谈一谈原始的RPN，原始的RPN主要用于对 anchor 的<strong>前景</strong>和<strong>背景</strong>进行分类，并不区分 anchor 的具体种类，因此，如果不引入 support image 的信息，那么 RPN 会对所有的前景 anchor 给出高置信度，这样有两个坏处：</p>
+<p>第一，众所周知，在训练阶段，RPN 会随机选取一定数量的正负样本ROI（Region of Proposal）送入下一阶段进行分类，如果对所有前景都给出高置信度，那么送入下一阶段的 roi 会包含许多与 support image 无关的类别，极端一点的情况甚至可能没有 support image 种类的 ROI，那么后续的网络没有办法训练。</p>
+<p>第二，在测试阶段的 RPN 会选取高于一定阈值的 ROI 送入下一阶段进行分类和回归，同样这时候也会送入一堆无关 support image 种类的ROI，既没用又浪费算力。</p>
+<p>举个例子：训练阶段，RPN 会对 anchor 进行分类以及回归，之后以正样本：负样本=1:3 的比例<strong>随机</strong>选取 512 个 ROI（注意anchor位移之后并被选中进入下一阶段的情况下才叫做 ROI）。 我们具体以图1的 support image 和 query image 为例，我们所要查询的物体只是头盔，但是在query image 中，原始 RPN 会把头盔、人和车都当做前景，这时候我们极端一点，假设本次 RPN 选取的128个正样本 ROI，全是跟人和车有关，那么后续的网络根本接触不到马的信息。</p>
+<p>因此作者提出了这个模块，最主要的目的就是<strong>提纯</strong>，让后续网络接收到的ROI 更加纯净，也就是说尽可能的与 support image 种类有关。</p>
+<p>那么怎么做，如下图：</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic3.PNG" alt="pic3"></p>
+<p>在了解这个模块之前，还要了解一下<strong>Siamese-fc</strong>，这是将 siamese 结构用于目标追踪的算法，并且目前在目标追踪领域也算是占据非常重要的地位。在了解之后再来看这个结构就能一目了然，它的核心思想就是把support image 想象成一个巨大的卷积核，在 query image 上进行卷积，那么很容易就能想到，在 query image 上与 support image 长得像的区域，激活值就会很高，这样就很容易找到 query image 上的高度疑似区域。同样，这里也是采取了这样一个思想，并且采用了 SiamRPN++ 中的depth-wise 思想以及将 X 这个大卷积核的大小变为 1（这个1是作者做实验得出的），只需要把这一步当成用一个大卷积核 X 在 Y 上做depth-wise卷积就可以了。</p>
+<p>得到 attention feature map G 之后接一个正常的 3X3 卷积。</p>
+<p>总而言之，这部分做的工作就是<strong>提纯</strong>，让 X 这个大卷积核在 Y 上卷积，找出高响应区域，这些高响应区域往往对应着 support image 种类的 ROI，这样可以提高后续分类网络的效率。</p>
+<h3 id="Multi-Relation-Detector-1"><a href="#Multi-Relation-Detector-1" class="headerlink" title="Multi-Relation Detector"></a><strong>Multi-Relation Detector</strong></h3><p>在 R-CNN 网络中，我们知道 RPN 选取的 ROI 经过 roi-pooling 操作，会得到固定大小的特征图，这些特征图会被送入到头网络进行具体种类的精细分类以及回归。在本文中，我们前一步修改的 RPN 已经产生了进行提纯后 ROI，所以我们希望这一部分能够对那些 ROI 进一步提纯，也就是再进一步从这些 ROI 中选出与 support image 种类一致的预测，这就是二阶段检测网络的一大好处，用第二阶段来强化第一阶段的结果。因此这一模块设计的目的就是进一步提纯，或者说<strong>细提纯</strong>，而前一步对应的也就是<strong>粗提纯</strong>。</p>
+<p>该模块结构如下图所示，下面就来介绍一下该部分的具体实现以及意义。</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic5.PNG" alt="pic5" style="zoom:80%;"></p>
+<p>我们看之前的整体网络结构图可以发现，最后的 Multi-Relation Detector的输入是两部分的 roi-pooling 得到的特征图，分别来自 support image 和 query image，为了更好的提纯，我们肯定需要计算 support image 中的特征与 query image 中的特征的相似性，然后留下相似性高的 ROI 区域，剔除相似性低的 ROI 区域，这样就轻松地完成了提纯的工作，那么怎么计算呢？这就是本模块的设计理念，<strong>计算相似性</strong>。</p>
+<p>本模块有三个结构，<strong>并行</strong>计算相似度，也就是三个结构分别会对 query image 中每一个 ROI 计算出一个相似度，这时候每一个 ROI 区域就有三个置信度，将三个置信度结合起来（不过作者没提到怎么结合）就得到了这个 ROI 最终的置信度。这时候我们就可以留下置信度阈值之上的框从而得到最终的预测结果。</p>
+<p>接下来我会一个个介绍这三部分的具体实现。</p>
+<p><strong>Global Relation</strong>：用于学习我们先假设送过来的 ROI 特征图大小固定为7x7xC，C是通道数。这时候我们有两个 ROI 特征图，一个叫 S 来自support，一个叫 Q 来自 query（当然query中可能有多个 ROI 特征图，我们这里只以一个为例）。我们首先将这两个特征图 concatenate，这时候就变成了7x7x2C，在经过一次全局平均池化，变成 1x1x2C，相当于获取了全局信息。这时候就可以通过一系列全连接操作输出得到一个数值（从2C降维到1），该数值就是两 ROI 特征图相似性。</p>
+<p><strong>Local Relation</strong>: 先对两个ROI特征图分别用 weight-share 的1x1卷积进行channel-wise 操作，然后再进行类似于 Attention RPN 的操作，区别在于support image 的 ROI 特征图不需要全局池化到 1x1，而是直接以 7x7 的大小作为一个卷积核在 query image 的 ROI 特征图上进行channel-wise卷积，变成 1x1xC，最后同样使用 fc 层得到预测相似度。</p>
+<p><strong>Patch Relation</strong>：我们首先将两个ROI特征图进行 concatenate，变成7x7x2C，然后经过一系列结构如下图所示。注意图中的卷积结构后面都会跟一个 RELU 用来获得非线性，并且 pooling 和卷积结构都是 stride=1 以及 padding=0，这样在经过这些操作之后，ROI 特征图的大小会变为1x1x2C，这时候后面接一个全连接层用来获得相似度，除了相似度之外，还并行接了一个全连接层，作者说是产生 bounding box predictions，我估计就是回归值，因为毕竟头网络会对 ROI 进行第二次回归。</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/table8.PNG" alt="table8" style="zoom:80%;"></p>
+<p>同时作者还对这三个 Relation Detector 做了消融实验，结果如下。可以看出不同的Relation Detector结果会有较大的差异，但是三者结合起来，效果是最好。</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic6.PNG" alt="pic6"></p>
+<p>以上使整体的模型，下面介绍训练策略。</p>
+<h3 id="Two-way-Contrastive-Training-Strategy-1"><a href="#Two-way-Contrastive-Training-Strategy-1" class="headerlink" title="Two-way Contrastive Training Strategy"></a>Two-way Contrastive Training Strategy</h3><p>在说训练策略之前，首先要提一下 <strong>K-way N-shot</strong>，意思是说support images 有K个种类，每个种类有N个实例。下面结合具体的例子解释一下。</p>
+<p>在本文中，作者首先说，如果按照常规的思路，训练的时候网络需要输入两张图片，分别是 query image 和 support image，而且需要保证 query image 中出现 support image 中的物体种类。</p>
+<p>补充一点：如何构造support image呢？首先根据要查询的物体找到其对应的 gt 框，这时候并不是直接 crop gt 框内的内容，而是在 gt 框外面额外扩充16个像素（上下左右四个方向），并且还要进行 0 值padding，为什么要进行 padding 呢，原因很简单，因为我们最终需要保证输入的support image 是一个正方形图片，在本文中是 320X320，如果你需要查询的物体外形是一个长方形，那么直接 crop 之后resize到正方形，会造成形状形变，为了保证物体形状不变，所以需要使用0值填充，将刚才选定的 gt+16个像素的区域根据长边填充到正方形，再进行resize，这样物体形状就不会变啦。</p>
+<p>回到刚才的话题，这时候我们有了一张 support 图片，因为只有一个查询物体，同样也只有一个种类，那么我们称之为<strong>1-way 1-shot</strong>。但是作者觉得，你训练的时候只提供一个 support image，确实，网络经过这样的训练能够很好的在 query image 中找到要 support image 中的物体，但是，只是召回率高，准确率无法保证。比如我需要查询的物体是马，确实把马都给找到了，但又找到了一些羊。所以作者想，不能只给一个种类的support image 给网络训练，我们还需要引入额外的support image，并且这个额外的 support image 中的物体种类还不能和之前的一样，比如再提供一张羊的图片作为训练数据，这个羊样本需要作为<strong>负样本</strong>，而马对应的则是<strong>正样本</strong>，这样可以提高网络的辨别能力。</p>
+<p>这时候我们把马对应的 support image 叫做<strong>positive support</strong>，把羊对应的叫做 <strong>negative support</strong>，如下图所示。现在我们的问题就变成了2-way, 1-shot。也就是本部分的标题，<strong>Two-way Contrastive Training Strategy。</strong>那么这种情况我们怎么训练呢。对于 K-way 的 training 过程，作者的做法是对于每一个种类，都有专属于自己的支路，也就是专属的 Attention RPN 和 Multi-Relation Detector，当然权重肯定是共享的，不然支路学了也没有意义。这种策略也很好理解，对于 positive support支路，网络就让他高召回，而对与 negative support 支路，网络就提高自己的辨别能力。</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic7.PNG" alt="pic7" style="zoom:80%;"></p>
+<p>这里有一个细节，由于 RPN 的目的是选取 ROI 送入下一阶段，那么怎么选，选哪些 ROI 到下一阶段就非常有考究。如果不加以限定，那么很有可能产生大量的背景 ROI（注意这里的前景背景 ROI 不是传统意义上的前景，而是说将与 positive support image 中种类对应的 ROI 叫做前景，其他的全部叫做背景，比如上图中的人就是背景，而马是前景），尤其在这种 2-way 训练方法中，这种情况肯定会更加明显，这样肯定是不利于网络的训练的。因此作者这里人为限定了采样策略（就像在 Faster R-CNN中一样，也是按照一定比例选取正负 ROI 送到下一阶段学习，否则负样本框会占据主导地位），在这里，我们首先定义以下几种配对的情况：</p>
+<p>（1）前景 ROI 和 positive support image（如上图中第一行）</p>
+<p>（2）背景 ROI 和 positive support image（如上图中第二行）</p>
+<p>（3）ROI 和 negative support image（如上图中第三行第四行）</p>
+<p>本文以1:2:1的固定比例对上述三种配对情况进行 ROI 采样，具体做法： 首先选取所有的（1）类型的ROI，假设有N个，这时候再选取top 2N的（2）类型 ROI，同理，最后选取 top N的（3）类型 ROI，这里的排序规则是根据他们 matching score，也就是这个框在 RPN 阶段对应的置信度。</p>
+<p>这样很明显带来两个好处：</p>
+<ol>
+<li>下一阶段网络训练的时候样本平衡，不会让背景 ROI 占据绝对主导地位</li>
+<li>网络同时引入 positive 和 negative support image，即能准确找到positive support image 中的物体，也能与其他类别物体区别开。</li>
+</ol>
+<p>作者通过实验发现这种做法能明显提高网络效果，那么既然多 way 能够提高效果，那么多shot呢。</p>
+<p>我们首先了解一下多shot的实现，对于每个种类，如果同时输入 N 张support image，那么就是N-shot，作者的处理方法很简单，就是每张图片经过 weight-share network 之后都有一个特征图，简单的将这 N 张特征图相加取平均，之后就按照之前的 1-shot 套路走就可以了。下图是作者的 k-way n-shot 实验结果图，可以看过影响还是蛮大的。</p>
+<p><img src="/2020/08/18/%E9%98%85%E8%AF%BB%E7%AC%AC%E4%B8%80%E7%AF%87%E9%A1%B6%E4%BC%9A%E8%AE%BA%E6%96%87/pic9.PNG" alt="pic9"></p>
+<h2 id="创新点"><a href="#创新点" class="headerlink" title="创新点"></a>创新点</h2><ul>
+<li>提出了一个新的适合于few-shot目标检测的数据集FSOD，这个数据集能够提高少样本目标检测效果，本文能够取得好效果也离不开这个数据集的功劳。</li>
+<li>提出一种基于注意力的 RPN 模块和多重关系检测器，以提高定位精度和区分能力，满足小样本目标检测需求</li>
+<li>提出一种 Two-way Contrastive Training Strategy 训练策略，增强网络对于其他类别物体的区分能力</li>
+</ul>
+<h2 id="算法评价"><a href="#算法评价" class="headerlink" title="算法评价"></a>算法评价</h2><ul>
+<li>本文整体上沿用了二阶段法的目标检测流程，先利用 RPN 网络对可能存在目标物体的区进行定位，然后再对感兴趣区域内的物体进行分类，分类时采用了小样本分类任务中常用的基于度量学习的方式，并针对小样本学习的场景做了一定的改进。借助于本文制作的小样本目标分类数据集和新型的训练策略，本文提出的算法在目标检测效果上都优于先前的算法，取得了显著的进步。</li>
+</ul>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://www.pianshen.com/article/9068984515/">https://www.pianshen.com/article/9068984515/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.pianshen.com/article/17771473966/">https://www.pianshen.com/article/17771473966/</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/121062401">https://zhuanlan.zhihu.com/p/121062401</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"># 目标检测</a>
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/18/Make-your-blog-better/" rel="prev" title="Make your blog better">
+      <i class="fa fa-chevron-left"></i> Make your blog better
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/08/19/Make-your-blog-better/%E8%B4%A6%E5%8F%B7%E7%99%BB%E5%BD%95_files/main/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB"><span class="nav-number">1.</span> <span class="nav-text">论文阅读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Author"><span class="nav-number">1.1.</span> <span class="nav-text">Author</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Abstract"><span class="nav-number">1.2.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Conclusion"><span class="nav-number">1.3.</span> <span class="nav-text">Conclusion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">1.4.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FSOD-A-Highly-Diverse-Few-Shot-Object-Detection-Dataset"><span class="nav-number">1.5.</span> <span class="nav-text">FSOD:A Highly-Diverse Few-Shot Object Detection Dataset</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Our-Methodology"><span class="nav-number">1.6.</span> <span class="nav-text">Our Methodology</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Problem-Definition"><span class="nav-number">1.6.1.</span> <span class="nav-text">Problem Definition</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deep-Attentioned-FewShot-Detection"><span class="nav-number">1.6.2.</span> <span class="nav-text">Deep Attentioned FewShot Detection</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Attention-Based-Region-Proposal-Network"><span class="nav-number">1.6.2.1.</span> <span class="nav-text">Attention-Based Region Proposal Network</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Multi-Relation-Detector"><span class="nav-number">1.6.2.2.</span> <span class="nav-text">Multi-Relation Detector</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Two-way-Contrastive-Training-Strategy"><span class="nav-number">1.7.</span> <span class="nav-text">Two-way Contrastive Training Strategy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Experiments"><span class="nav-number">1.8.</span> <span class="nav-text">Experiments</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.9.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0"><span class="nav-number">2.</span> <span class="nav-text">阅读笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3"><span class="nav-number">2.1.</span> <span class="nav-text">核心思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E5%A4%A7%E7%AE%97%E6%B3%95%E6%B7%B1%E5%85%A5%E8%AE%B2%E8%A7%A3"><span class="nav-number">2.2.</span> <span class="nav-text">三大算法深入讲解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Attention-Based-Region-Proposal-Network-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">Attention-Based Region Proposal Network</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Multi-Relation-Detector-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">Multi-Relation Detector</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Two-way-Contrastive-Training-Strategy-1"><span class="nav-number">2.2.3.</span> <span class="nav-text">Two-way Contrastive Training Strategy</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9"><span class="nav-number">2.3.</span> <span class="nav-text">创新点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E8%AF%84%E4%BB%B7"><span class="nav-number">2.4.</span> <span class="nav-text">算法评价</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">lisdarr</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lisdarr</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
